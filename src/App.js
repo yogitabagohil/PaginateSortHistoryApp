@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, Container, Typography } from '@mui/material';
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -24,7 +24,10 @@ const App = () => {
   };
 
   return (
-    <div>
+    <Container style={{ marginTop: '50px', padding: '20px' }}>
+      <Typography variant="h4" gutterBottom>
+        User Data Table with Pagination
+      </Typography>
 
       <TableContainer component={Paper}>
         <Table>
@@ -42,20 +45,21 @@ const App = () => {
                 <TableCell>{item.email}</TableCell>
                 <TableCell>{item.gender}</TableCell>
               </TableRow>
-            )): null}
+            )) : null}
           </TableBody>
         </Table>
       </TableContainer>
 
       {data && data.length > 0 ? (
-  <Pagination
-    count={Math.ceil(data.length / 10)}
-    page={currentPage}
-    onChange={handlePageChange}
-    color="primary"
-  />
-) : null}
-    </div>
+        <Pagination
+          count={Math.ceil(data.length / 10)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ marginTop: '20px', '& .MuiPaginationItem-root': { borderRadius: '5px', marginRight: '8px' } }}
+        />
+      ) : null}
+    </Container>
   );
 };
 
