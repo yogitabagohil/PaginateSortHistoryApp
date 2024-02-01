@@ -4,6 +4,13 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 const App = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState(null);
+
+  
+  const [visitHistory, setVisitHistory] = useState(() => {
+    const storedHistory = localStorage.getItem('visitHistory');
+    return storedHistory ? JSON.parse(storedHistory) : [];
+  });
 
   useEffect(() => {
     fetchData();
@@ -23,11 +30,44 @@ const App = () => {
     setCurrentPage(newPage);
   };
 
+  const handleSort = () => {
+    // Sort the data based on gender
+    const sortedData = [...data].slice((currentPage - 1) * 10, currentPage * 10).sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.gender.localeCompare(b.gender);
+      } else {
+        return b.gender.localeCompare(a.gender);
+      }
+    });
+
+    // Update the state with the sorted data
+    setData((prevData) => {
+      const newData = [...prevData];
+      newData.splice((currentPage - 1) * 10, currentPage * 10, ...sortedData);
+      return newData;
+    });
+
+    // Toggle the sorting order for the next click
+    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const handleViewHistory = () => {
+    // Display the visit history in an alert
+    alert(JSON.stringify(visitHistory, null, 2));
+  };
+
   return (
     <Container style={{ marginTop: '50px', padding: '20px' }}>
       <Typography variant="h4" gutterBottom>
         User Data Table with Pagination
       </Typography>
+      
+      <Button variant="contained" color="primary" onClick={handleSort} style={{ marginBottom: '20px' }}>
+        Sort by Gender
+      </Button>
+      <Button variant="contained" color="primary" onClick={handleViewHistory} style={{ marginBottom: '20px', marginLeft:'20px' }}>
+        View History
+      </Button>
 
       <TableContainer component={Paper}>
         <Table>
