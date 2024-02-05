@@ -9,6 +9,7 @@ const App = () => {
   
   const [visitHistory, setVisitHistory] = useState(() => {
     const storedHistory = localStorage.getItem('visitHistory');
+    console.log("storedHistory",storedHistory)
     return storedHistory ? JSON.parse(storedHistory) : [];
   });
 
@@ -21,13 +22,22 @@ const App = () => {
       const response = await fetch(`https://randomuser.me/api/?results=100`);
       const result = await response.json();
       setData(result.results);
+      updateVisitHistory(result.results);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
-
+  const updateVisitHistory = (newData) => {
+    const currentTime = new Date().toLocaleString();
+    setVisitHistory((prevHistory) => {
+      const updatedHistory = [...prevHistory, { data: newData, visitedTime: currentTime }];
+      localStorage.setItem('visitHistory', JSON.stringify(updatedHistory));
+      return updatedHistory;
+    });
+  };
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
+    updateVisitHistory(newPage)
   };
 
   const handleSort = () => {
@@ -46,14 +56,16 @@ const App = () => {
       newData.splice((currentPage - 1) * 10, currentPage * 10, ...sortedData);
       return newData;
     });
-
+// Update visit history with sorted data
+  updateVisitHistory(sortedData); 
     // Toggle the sorting order for the next click
     setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
   const handleViewHistory = () => {
+    console.log("visitHistory",JSON.stringify(visitHistory, null, 2))
     // Display the visit history in an alert
-    alert(JSON.stringify(visitHistory, null, 2));
+    alert(JSON.stringify(visitHistory, null, 10));
   };
 
   return (
